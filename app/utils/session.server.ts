@@ -70,6 +70,15 @@ export async function login({ username, password }: LoginForm) {
   return { id: user.id, username };
 }
 
+// smelly, this should probably go in another file...
+export async function register({ username, password }: LoginForm) {
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  const user = await db.user.create({ data: { username, passwordHash } });
+
+  return { id: user.id, username };
+}
+
 export async function createUserSession(userId: string, redirectTo: string) {
   const session = await storage.getSession();
   session.set("userId", userId);

@@ -1,11 +1,16 @@
 import { json, Link, LoaderFunction, useLoaderData } from "remix";
 import { db } from "~/utils/db.server";
-import type { Joke } from "@prisma/client";
 
-type LoaderData = { joke: Joke };
+import { Prisma } from "@prisma/client";
+
+type JokeWithJokester = Prisma.JokeGetPayload<{ include: { jokester: true } }>;
+type LoaderData = { joke: JokeWithJokester };
 
 export const loader: LoaderFunction = async ({ params }) => {
-  const joke = await db.joke.findUnique({ where: { id: params.jokeId } });
+  const joke = await db.joke.findUnique({
+    where: { id: params.jokeId },
+    include: { jokester: true },
+  });
   if (!joke) throw new Error("Joke not found!");
 
   const data: LoaderData = { joke };
@@ -19,6 +24,7 @@ export default function JokeRoute() {
     <div>
       <p>Here's your hilarious joke:</p>
       <p>{data.joke.content}</p>
+      <p>Author: {data.joke.jokester.username}</p>
       <Link to=".">{data.joke.name} Permalink</Link>
     </div>
   );
