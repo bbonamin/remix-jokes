@@ -1,4 +1,11 @@
-import { json, Link, LoaderFunction, useLoaderData, useParams } from "remix";
+import {
+  json,
+  Link,
+  LoaderFunction,
+  useCatch,
+  useLoaderData,
+  useParams,
+} from "remix";
 import { db } from "~/utils/db.server";
 
 import { Prisma } from "@prisma/client";
@@ -11,7 +18,7 @@ export const loader: LoaderFunction = async ({ params }) => {
     where: { id: params.jokeId },
     include: { jokester: true },
   });
-  if (!joke) throw new Error("Joke not found!");
+  if (!joke) throw new Response("Joke not found!", { status: 404 });
 
   const data: LoaderData = { joke };
 
@@ -37,4 +44,15 @@ export function ErrorBoundary() {
       {`Error loading joke with id ${jokeId}`}
     </div>
   );
+}
+
+export function CatchBoundary() {
+  const caught = useCatch();
+  const params = useParams();
+  if (caught.status === 404) {
+    return (
+      <div className="error-container"> Huh? What is "{params.jokeId}"</div>
+    );
+  }
+  throw new Error(`Unhandler error: ${caught.status}`);
 }
