@@ -1,4 +1,4 @@
-import { json, Link, LoaderFunction, useLoaderData } from "remix";
+import { json, Link, LoaderFunction, useLoaderData, useParams } from "remix";
 import { db } from "~/utils/db.server";
 
 import { Prisma } from "@prisma/client";
@@ -26,6 +26,15 @@ export default function JokeRoute() {
       <p>{data.joke.content}</p>
       <p>Author: {data.joke.jokester.username}</p>
       <Link to=".">{data.joke.name} Permalink</Link>
+    </div>
+  );
+}
+
+export function ErrorBoundary() {
+  const { jokeId } = useParams();
+  return (
+    <div className="error-container">
+      {`Error loading joke with id ${jokeId}`}
     </div>
   );
 }
