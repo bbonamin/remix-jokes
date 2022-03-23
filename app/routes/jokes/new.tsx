@@ -1,6 +1,7 @@
 import type { ActionFunction } from "remix";
 import { useActionData, redirect, json } from "remix";
 import { db } from "~/utils/db.server";
+import { requireUserId } from "~/utils/session.server";
 
 const validateJokeContent = function (content: string) {
   if (content.length < 10) {
@@ -31,6 +32,8 @@ const badRequest = (data: ActionData) => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  const userId = await requireUserId(request);
+
   const formData = await request.formData();
   const name = formData.get("name");
   const content = formData.get("content");
@@ -46,7 +49,7 @@ export const action: ActionFunction = async ({ request }) => {
     content: validateJokeContent(content),
   };
 
-  const fields = { name, content };
+  const fields = { name, content, jokesterId: userId };
   if (Object.values(fieldErrors).some(Boolean)) {
     return badRequest({ fieldErrors, fields });
   }
