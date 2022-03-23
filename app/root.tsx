@@ -1,4 +1,4 @@
-import type { LinksFunction } from "remix";
+import { LinksFunction, Scripts } from "remix";
 
 import { Links, LiveReload, Outlet, useCatch } from "remix";
 
@@ -39,6 +39,7 @@ function Document({
       </head>
       <body>
         {children}
+        <Scripts />
         <LiveReload />
       </body>
     </html>

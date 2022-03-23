@@ -39,7 +39,7 @@ export async function getUser(request: Request) {
   const userId = await getUserId(request);
   if (!userId) return null;
 
-  const user = db.user.findUnique({
+  const user = await db.user.findUnique({
     where: { id: userId },
     select: { id: true, username: true },
   });
